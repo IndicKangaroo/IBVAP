@@ -13,6 +13,7 @@ data/anpr_evidence/*.jpg
 data/anpr_results.jsonl
 data/anpr_results_*.jsonl
 data/pipeline_logs/
+data/zones
 FRONTEND_BLUEPRINT.md
 ibvap.db
 yolo*
@@ -33,7 +34,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/

@@ -1,12 +1,13 @@
 import { palette, timeAgo } from "../lib/palette.js";
 import StatusPill from "./StatusPill.jsx";
+import { Check } from "lucide-react";
 
-function IncidentCard({ incident, onSelect }) {
+
+function IncidentCard({ incident, onSelect, onUpdateStatus }) {
   const barColor = incident.severity === "HIGH" ? palette.high : palette.medium;
   return (
-    <button
-      onClick={() => onSelect(incident.id)}
-      className="w-full text-left flex gap-3 px-3 py-2.5 border-b hover:bg-white/[0.02] transition-colors"
+    <div
+      className="w-full text-left flex flex-1 gap-3 px-3 py-2.5 border-b hover:bg-white/[0.02] transition-colors"
       style={{ borderColor: palette.border }}
     >
       <div className="w-1 rounded-full self-stretch shrink-0" style={{ backgroundColor: barColor }} />
@@ -23,17 +24,64 @@ function IncidentCard({ incident, onSelect }) {
           <span>{incident.event.cls ?? "—"}</span>
           <span>{incident.event.confidence != null ? `${Math.round(incident.event.confidence * 100)}%` : "—"}</span>
         </div>
+        <div className="mt-3 ibvap-mono text-[11px] flex items-center justify-between">
+          <button
+            onClick={() => onSelect(incident.id)}
+            className="cursor-pointer py-0.5 hover:underline"
+            style={{ color: palette.textPrimary }}
+          >
+            View Details
+          </button>
+          <div className="flex items-center gap-3">
+            {incident.status !== "ACKNOWLEDGED" &&
+              incident.status !== "RESOLVED" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdateStatus(incident.id, "ACKNOWLEDGED");
+                  }}
+                  className="cursor-pointer px-2 py-0.5 rounded-sm border hover:bg-white/[0.03]"
+                  style={{
+                    borderColor: palette.borderLight,
+                    color: palette.textSecondary,
+                  }}
+                >
+                  Acknowledge
+                </button>
+              )}
+
+            {incident.status !== "RESOLVED" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateStatus(incident.id, "RESOLVED");
+                }}
+                className="cursor-pointer px-2 py-0.5 rounded-sm border hover:bg-white/[0.03] flex items-center gap-1"
+                style={{
+                  borderColor: palette.borderLight,
+                  color: palette.resolved,
+                }}
+              >
+                <Check size={11} />
+                Resolve
+              </button>
+            )}
+          </div>
+
+          
+        </div>
       </div>
       <div className="ibvap-mono text-[11px] shrink-0" style={{ color: palette.textMuted }}>
+        {/* console.log(timeAgo(incident.created_at)) */}
         {timeAgo(incident.created_at)}
       </div>
-    </button>
+    </div>
   );
 }
 
-export default function AlertRail({ incidents, onSelect }) {
+export default function AlertRail({ incidents, onSelect, onUpdateStatus }) {
   return (
-    <div className="w-[300px] border-l shrink-0 flex flex-col min-h-0" style={{ borderColor: palette.border }}>
+    <div className="w-[30%] border-l shrink-0 flex flex-col min-h-0" style={{ borderColor: palette.border }}>
       <div className="px-3 py-2 text-[11px] uppercase tracking-wide shrink-0" style={{ color: palette.textMuted }}>
         Alert feed
       </div>
@@ -44,9 +92,10 @@ export default function AlertRail({ incidents, onSelect }) {
           </div>
         )}
         {incidents.map((inc) => (
-          <IncidentCard key={inc.id} incident={inc} onSelect={onSelect} />
+          <IncidentCard key={inc.id} incident={inc} onSelect={onSelect} onUpdateStatus={onUpdateStatus} />
         ))}
       </div>
+
     </div>
   );
 }

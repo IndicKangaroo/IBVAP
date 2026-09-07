@@ -7,6 +7,7 @@ uvicorn[standard]>=0.29
 sqlalchemy>=2.0
 requests>=2.31      # AI node -> backend event push (Phase 4)
 easyocr>=1.7        # Phase 5 ANPR
+pydantic
 
 # Added in later phases (uncomment as you get there):
 # fastapi

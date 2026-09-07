@@ -3,7 +3,7 @@ import { palette } from "../lib/palette.js";
 import { evidenceUrl } from "../lib/api.js";
 import StatusPill from "./StatusPill.jsx";
 
-export default function IncidentDetailModal({ incident, onClose, onUpdateStatus }) {
+export default function IncidentDetailModal({ incident, onClose }) {
   if (!incident) return null;
   const imgUrl = evidenceUrl(incident.event.evidence_path);
 
@@ -39,8 +39,8 @@ export default function IncidentDetailModal({ incident, onClose, onUpdateStatus 
           <div>created: <span style={{ color: palette.textPrimary }}>{new Date(incident.created_at).toLocaleString()}</span></div>
         </div>
 
-        <div className="flex items-center gap-2 mt-4">
-          <StatusPill status={incident.status} />
+        <div className="mt-4"><StatusPill status={incident.status} /></div>
+        {/* <div className="flex items-center gap-2 mt-4">
           {incident.status !== "ACKNOWLEDGED" && incident.status !== "RESOLVED" && (
             <button
               onClick={() => onUpdateStatus(incident.id, "ACKNOWLEDGED")}
@@ -59,7 +59,7 @@ export default function IncidentDetailModal({ incident, onClose, onUpdateStatus 
               Resolve
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
