@@ -98,7 +98,7 @@ export default function App() {
           />
         </div>
         <CameraPanel cameraId={selectedCameraId} incidents={incidents} />
-        <AlertRail incidents={incidents} onSelect={setSelectedIncidentId} />
+        <AlertRail incidents={incidents} onSelect={setSelectedIncidentId} onUpdateStatus={handleUpdateStatus} />
       </div>
 
       {/* bottom: incidents / anpr tabs */}
