@@ -88,7 +88,8 @@ export default function App() {
 
       {/* main three-pane layout */}
       <div className="flex flex-1 min-h-0">
-        <div className="w-[200px] border-r shrink-0 flex flex-col" style={{ borderColor: palette.border }}>
+        <div className="w-[15%] border-r shrink-0 flex flex-col" style={{ borderColor: palette.border }}>
+
           <PipelinesPanel onAddCamera={() => setShowAddCamera(true)} />
           <CameraGrid
             cameras={cameras}
@@ -125,7 +126,7 @@ export default function App() {
           {/* {tab === "incidents" ? (
             <IncidentTable incidents={incidents} onUpdateStatus={handleUpdateStatus} />
           ) : ( */}
-            <ANPRTable results={anprResults} />
+          <ANPRTable results={anprResults} />
           {/* )} */}
         </div>
       </div>
@@ -133,7 +134,7 @@ export default function App() {
       <IncidentDetailModal
         incident={selectedIncident}
         onClose={() => setSelectedIncidentId(null)}
-        // onUpdateStatus={handleUpdateStatus}
+      // onUpdateStatus={handleUpdateStatus}
       />
 
       {showAddCamera && (

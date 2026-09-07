@@ -8,7 +8,9 @@ export default function CameraPanel({ cameraId, incidents }) {
   const imgUrl = latestWithEvidence ? evidenceUrl(latestWithEvidence.event.evidence_path) : null;
 
   return (
-    <div className="flex-1 min-w-0 p-4 overflow-auto">
+    // <div className="flex-1 min-w-0 p-4 overflow-auto">
+    <div className="w-[55%] p-4 overflow-auto">
+
       <div className="ibvap-mono text-[12px] mb-2" style={{ color: palette.textSecondary }}>
         {cameraId || "No camera selected"}
       </div>
