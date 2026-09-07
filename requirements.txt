@@ -1,0 +1,17 @@
+opencv-python>=4.9        # NOT headless — Phase 3's draw_zone.py needs cv2.imshow/mouse GUI
+ultralytics>=8.2
+numpy>=1.26
+lap>=0.5.12         # required by Ultralytics' ByteTrack integration (Phase 2)
+fastapi>=0.110
+uvicorn[standard]>=0.29
+sqlalchemy>=2.0
+requests>=2.31      # AI node -> backend event push (Phase 4)
+easyocr>=1.7        # Phase 5 ANPR
+
+# Added in later phases (uncomment as you get there):
+# fastapi
+# uvicorn[standard]
+# websockets
+# sqlalchemy
+# psycopg2-binary
+# easyocr           # or: paddleocr + paddlepaddle
