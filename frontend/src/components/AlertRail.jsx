@@ -72,6 +72,7 @@ function IncidentCard({ incident, onSelect, onUpdateStatus }) {
         </div>
       </div>
       <div className="ibvap-mono text-[11px] shrink-0" style={{ color: palette.textMuted }}>
+        {/* console.log(timeAgo(incident.created_at)) */}
         {timeAgo(incident.created_at)}
       </div>
     </div>
