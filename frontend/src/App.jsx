@@ -122,18 +122,18 @@ export default function App() {
           ))}
         </div>
         <div className="overflow-auto" style={{ height: 220 - 37 }}>
-          {tab === "incidents" ? (
+          {/* {tab === "incidents" ? (
             <IncidentTable incidents={incidents} onUpdateStatus={handleUpdateStatus} />
-          ) : (
+          ) : ( */}
             <ANPRTable results={anprResults} />
-          )}
+          {/* )} */}
         </div>
       </div>
 
       <IncidentDetailModal
         incident={selectedIncident}
         onClose={() => setSelectedIncidentId(null)}
-        onUpdateStatus={handleUpdateStatus}
+        // onUpdateStatus={handleUpdateStatus}
       />
 
       {showAddCamera && (
