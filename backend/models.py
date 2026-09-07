@@ -9,7 +9,7 @@ and ANPR is Phase 5.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime,timezone
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
@@ -29,7 +29,7 @@ class Camera(Base):
     location_label = Column(String, nullable=True)
     status = Column(String, default="ONLINE")
     stream_url = Column(String, nullable=True)
-    last_seen_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_seen_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class Event(Base):
@@ -48,8 +48,10 @@ class Event(Base):
     confidence = Column(Float, nullable=True)
     timestamp = Column(Float, nullable=False)    # unix epoch seconds, set by the AI node
     evidence_path = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
+    created_at = Column(
+    DateTime(timezone=True),
+    default=lambda: datetime.now(timezone.utc)
+)
     incident = relationship("Incident", back_populates="event", uselist=False)
 
 
@@ -60,8 +62,11 @@ class Incident(Base):
     event_id = Column(String, ForeignKey("events.id"), nullable=False, unique=True)
     severity = Column(String, default="MEDIUM")
     status = Column(String, default="ACTIVE")   # ACTIVE -> ACKNOWLEDGED -> RESOLVED
-    created_at = Column(DateTime, default=datetime.utcnow)
-    resolved_at = Column(DateTime, nullable=True)
+    created_at = Column(
+    DateTime(timezone=True),
+    default=lambda: datetime.now(timezone.utc)
+)
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
 
     event = relationship("Event", back_populates="incident")
 
@@ -77,4 +82,7 @@ class ANPRResult(Base):
     plausible = Column(Boolean, default=False)
     timestamp = Column(Float, nullable=False)
     evidence_path = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+    DateTime(timezone=True),
+    default=lambda: datetime.now(timezone.utc)
+)
