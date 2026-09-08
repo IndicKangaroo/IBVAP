@@ -24,11 +24,8 @@ from typing import ClassVar, List, Tuple
 
 from ultralytics import YOLO
 
+from vision.coco_classes import classify_coco_id
 from vision.video_ingest.reader import Frame
-
-# Same MVP scope as Phase 1: person + the four COCO vehicle classes.
-_COCO_VEHICLE_IDS = {2, 3, 5, 7}
-_COCO_PERSON_ID = 0
 
 
 @dataclass
@@ -37,7 +34,7 @@ class TrackedObject:
     frame_id: int
     timestamp: float
     track_id: int
-    cls: str                              # "person" | "vehicle"
+    cls: str                              # "person" | "car" | "motorcycle" | "bus" | "truck"
     confidence: float
     bbox: Tuple[float, float, float, float]  # x1, y1, x2, y2 in pixels
 
@@ -90,12 +87,8 @@ class Tracker:
             return tracked
 
         for box in results.boxes:
-            cls_id = int(box.cls[0])
-            if cls_id == _COCO_PERSON_ID:
-                cls_name = "person"
-            elif cls_id in _COCO_VEHICLE_IDS:
-                cls_name = "vehicle"
-            else:
+            cls_name = classify_coco_id(int(box.cls[0]))
+            if cls_name is None:
                 continue  # outside MVP scope
 
             x1, y1, x2, y2 = (float(v) for v in box.xyxy[0])

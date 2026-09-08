@@ -1,0 +1,23 @@
+{
+  "camera_id": "cam1",
+  "zones": [
+    {
+      "zone_id": "restricted-1",
+      "name": "Restricted Zone",
+      "polygon": [
+        [
+          13.0,
+          52.0
+        ],
+        [
+          714.0,
+          50.0
+        ],
+        [
+          723.0,
+          373.0
+        ]
+      ]
+    }
+  ]
+}

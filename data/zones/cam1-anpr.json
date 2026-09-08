@@ -1,0 +1,27 @@
+{
+  "camera_id": "cam1",
+  "zones": [
+    {
+      "zone_id": "checkpoint-1",
+      "name": "ANPR Checkpoint",
+      "polygon": [
+        [
+          724.0,
+          8.0
+        ],
+        [
+          724.0,
+          8.0
+        ],
+        [
+          730.0,
+          198.0
+        ],
+        [
+          368.0,
+          123.0
+        ]
+      ]
+    }
+  ]
+}

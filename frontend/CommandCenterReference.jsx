@@ -66,13 +66,13 @@ const INITIAL_INCIDENTS = [
   {
     id: "inc-3", event_id: "evt-3", severity: "HIGH", status: "RESOLVED",
     created_at: "2026-09-02T13:48:12.000Z", resolved_at: "2026-09-02T13:52:00.000Z",
-    event: { id: "evt-3", camera_id: "CAM-02", zone_id: "checkpoint-1", zone_name: "ANPR Checkpoint", track_id: 4, type: "INTRUSION", cls: "vehicle", confidence: 0.85, timestamp: 1788398892.0, evidence_path: null, created_at: "2026-09-02T13:48:11.900Z" },
+    event: { id: "evt-3", camera_id: "CAM-02", zone_id: "checkpoint-1", zone_name: "ANPR Checkpoint", track_id: 4, type: "INTRUSION", cls: "truck", confidence: 0.85, timestamp: 1788398892.0, evidence_path: null, created_at: "2026-09-02T13:48:11.900Z" },
   },
 ];
 
 const INITIAL_ANPR = [
-  { id: "anpr-1", camera_id: "CAM-02", track_id: 4, plate_text: "KA01AB1234", confidence: 0.83, plausible: true, timestamp: 1788398892.0, evidence_path: null, created_at: "2026-09-02T13:48:12.500Z" },
-  { id: "anpr-2", camera_id: "CAM-02", track_id: 5, plate_text: null, confidence: 0.0, plausible: false, timestamp: 1788399200.0, evidence_path: null, created_at: "2026-09-02T13:53:20.000Z" },
+  { id: "anpr-1", camera_id: "CAM-02", track_id: 4, vehicle_type: "truck", vehicle_color: "white", vehicle_color_confidence: 0.74, plate_text: "KA01AB1234", confidence: 0.83, plausible: true, timestamp: 1788398892.0, evidence_path: null, created_at: "2026-09-02T13:48:12.500Z" },
+  { id: "anpr-2", camera_id: "CAM-02", track_id: 5, vehicle_type: "car", vehicle_color: "blue", vehicle_color_confidence: 0.70, plate_text: null, confidence: 0.0, plausible: false, timestamp: 1788399200.0, evidence_path: null, created_at: "2026-09-02T13:53:20.000Z" },
 ];
 
 let nextId = 4;
@@ -196,7 +196,7 @@ export default function IBVAPCommandCenter() {
       created_at: new Date().toISOString(), resolved_at: null,
       event: {
         id: `evt-${nextId}`, camera_id: camera, zone_id: "z", zone_name: zone,
-        track_id: 30 + nextId, type: "INTRUSION", cls: Math.random() > 0.5 ? "person" : "vehicle",
+        track_id: 30 + nextId, type: "INTRUSION", cls: Math.random() > 0.5 ? "person" : "car",
         confidence, timestamp: Date.now() / 1000, evidence_path: null, created_at: new Date().toISOString(),
       },
     };

@@ -77,6 +77,9 @@ class ANPRResult(Base):
     id = Column(String, primary_key=True, default=_uuid)
     camera_id = Column(String, ForeignKey("cameras.id"), nullable=False)
     track_id = Column(Integer, nullable=True)
+    vehicle_type = Column(String, nullable=True)              # "car" | "motorcycle" | "bus" | "truck"
+    vehicle_color = Column(String, nullable=True)              # e.g. "white", "blue" — NULL if uncertain
+    vehicle_color_confidence = Column(Float, default=0.0)
     plate_text = Column(String, nullable=True)   # NULL means "nothing readable" — not an error
     confidence = Column(Float, default=0.0)
     plausible = Column(Boolean, default=False)

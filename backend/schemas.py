@@ -197,10 +197,14 @@ class CameraOut(UTCTimestampMixin):
 class ANPRResultIn(BaseModel):
     """What the AI node POSTs when a vehicle crosses an ANPR trigger
     zone. Field names match anpr.engine.ANPRResult. plate_text=None is
-    a valid, expected result — "nothing legible", not an error."""
+    a valid, expected result — "nothing legible", not an error. Same
+    for vehicle_color=None — a low-confidence/ambiguous color read."""
     result_id: str
     camera_id: str
     track_id: Optional[int] = None
+    vehicle_type: Optional[str] = None
+    vehicle_color: Optional[str] = None
+    vehicle_color_confidence: float = 0.0
     plate_text: Optional[str] = None
     confidence: float = 0.0
     plausible: bool = False
@@ -213,6 +217,9 @@ class ANPRResultOut(UTCTimestampMixin):
     id: str
     camera_id: str
     track_id: Optional[int] = None
+    vehicle_type: Optional[str] = None
+    vehicle_color: Optional[str] = None
+    vehicle_color_confidence: float = 0.0
     plate_text: Optional[str] = None
     confidence: float
     plausible: bool

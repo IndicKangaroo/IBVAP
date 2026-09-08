@@ -1,15 +1,17 @@
-"""ANPR trigger engine — Phase 5.
+"""ANPR + vehicle identification trigger engine — Phase 5 (extended).
 
-Runs plate localization + OCR only when a vehicle track crosses into a
-designated ANPR trigger zone — and only once per track per zone, using
-the same crossing-detection idiom as
-vision.event_engine.engine.EventEngine. This directly implements the
-guide's performance strategy: "Do not run OCR ... on every frame;
-trigger expensive modules only when needed."
+Runs plate localization + OCR, plus vehicle type/color classification,
+only when a vehicle track crosses into a designated trigger zone — and
+only once per track per zone, using the same crossing-detection idiom
+as vision.event_engine.engine.EventEngine. This directly implements
+the guide's performance strategy: "Do not run OCR ... on every frame;
+trigger expensive modules only when needed." Color classification is
+cheap enough to not need its own gate, so it rides along on the same
+trigger as OCR rather than getting a separate one.
 
 A trigger zone is just a Zone (same class, same JSON config format as
 restricted zones) — reused here for a different purpose: not "alert on
-entry" but "read a plate once per vehicle passing through."
+entry" but "identify a vehicle once per pass-through."
 """
 from __future__ import annotations
 
@@ -21,10 +23,12 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 import cv2
 
+from vision.coco_classes import is_vehicle
 from vision.event_engine.engine import reference_point
 from vision.event_engine.zone import Zone
 from vision.tracking.tracker import TrackedObject
 
+from .color_classifier import classify_vehicle_color
 from .normalizer import is_plausible, normalize
 from .ocr_reader import PlateOCR
 from .plate_localizer import localize_plate
@@ -35,6 +39,9 @@ class ANPRResult:
     result_id: str
     camera_id: str
     track_id: int
+    vehicle_type: str                    # "car" | "motorcycle" | "bus" | "truck"
+    vehicle_color: Optional[str]         # e.g. "white", "blue" — None if the crop was empty
+    vehicle_color_confidence: float
     plate_text: Optional[str]
     confidence: float
     plausible: bool
@@ -65,7 +72,7 @@ class ANPREngine:
     def process(self, tracked: List[TrackedObject], frame_image) -> List[ANPRResult]:
         results: List[ANPRResult] = []
         for obj in tracked:
-            if obj.cls != "vehicle":
+            if not is_vehicle(obj.cls):
                 continue
             point = reference_point(obj.bbox)
             for zone in self.trigger_zones:
@@ -91,6 +98,11 @@ class ANPREngine:
         result_id = str(uuid.uuid4())
         plate_text, confidence, plausible, evidence_path = None, 0.0, False, None
 
+        # Runs on every triggered vehicle regardless of whether OCR
+        # finds a plate — color is independent of plate legibility,
+        # and unlike OCR it's cheap enough not to need its own gate.
+        vehicle_color, vehicle_color_confidence = classify_vehicle_color(vehicle_crop)
+
         if vehicle_crop.size > 0:
             px1, py1, px2, py2 = localize_plate(vehicle_crop)
             plate_crop = vehicle_crop[py1:py2, px1:px2]
@@ -109,6 +121,9 @@ class ANPREngine:
             result_id=result_id,
             camera_id=obj.camera_id,
             track_id=obj.track_id,
+            vehicle_type=obj.cls,
+            vehicle_color=vehicle_color if vehicle_color != "unknown" else None,
+            vehicle_color_confidence=vehicle_color_confidence,
             plate_text=plate_text,
             confidence=confidence,
             plausible=plausible,
