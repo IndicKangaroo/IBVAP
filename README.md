@@ -38,7 +38,8 @@ Checked against the original problem statement's required capabilities — this 
 |---|---|---|
 | Human detection and tracking | ✅ Built | YOLOv8 + ByteTrack, persistent IDs verified stable across real footage |
 | Vehicle detection | ✅ Built | Same pipeline, filtered to COCO vehicle classes |
-| Vehicle *classification* (car/truck/bike, etc.) | ⚠️ Partial | Detected as one generic `"vehicle"` class today, not sub-classified |
+| Vehicle classification (car/truck/bus/motorcycle) | ✅ Built | Real COCO sub-types, not a generic `"vehicle"` label — see the [Development Log](docs/DEVELOPMENT_LOG.md) for the fix |
+| Vehicle color identification | ✅ Built | Classical HSV-bucket classification (9 common colors), confidence-scored — not in the original PS187 list explicitly, but supports "vehicle identification" from the Expected Solution bullets |
 | Automatic Number Plate Recognition | ✅ Built | Classical CV plate localization + OCR, honestly reports "nothing legible" rather than guessing |
 | Virtual fence / intrusion detection | ✅ Built | Polygon zones, one event per crossing (not per frame) |
 | Real-time alerts + event logging | ✅ Built | WebSocket push to a live dashboard, persisted to a database |
@@ -239,13 +240,12 @@ Stated directly rather than left for someone to discover:
 Ranked roughly by value relative to effort, not by how they're listed in the problem statement:
 
 1. **Suspicious-activity / behavioral engine** — a designed-but-unbuilt rule-based system (loitering duration, repeated fence approach, zone-dwell time) feeding a finite-state model, directly closing the largest capability gap against the problem statement.
-2. **Live video overlay streaming** — an MJPEG or WebSocket frame+box stream, replacing the evidence-snapshot placeholder with what the original spec actually asked for.
+2. **Live video overlay streaming** — an MJPEG or WebSocket frame+box stream, replacing the evidence-snapshot placeholder with what the original spec actually asked for. (The snapshot itself is now annotated — box + zone baked in — just not continuous/live; see Known limitations.)
 3. **Local + cloud hybrid deployment** — AI inference stays on-site (see [Architecture](#architecture)); a cheap cloud VM mirrors the backend/dashboard for resilience and remote situational awareness, with a heartbeat-driven failover indicator. Deliberately *not* routing camera video through the cloud, given the problem statement's remote-location framing.
 4. **Face detection** and **night-time/low-light handling** — both explicitly named in the problem statement, both deferred from day one as later-phase work.
 5. **Command & control system integration** — no adapter or API contract exists yet for handing incidents to an external C2 platform.
-6. **Vehicle sub-classification** (car/truck/bus/motorcycle) — currently one generic `vehicle` class; the detector already sees the finer COCO categories, this is a filtering change, not new modeling work.
-7. **Weapon detection** — lowest priority; not actually named in the problem statement's capability list, and would need its own trained model rather than a fine-tune of the existing pipeline.
-8. **Authentication and multi-user roles** for the dashboard.
+6. **Weapon detection** — lowest priority; not actually named in the problem statement's capability list, and would need its own trained model rather than a fine-tune of the existing pipeline.
+7. **Authentication and multi-user roles** for the dashboard.
 
 ## Further reading
 

@@ -656,6 +656,64 @@ through the real backend: pipeline → `POST /api/events` →
 `GET /data/evidence/{file}` (the exact path/URL shape the frontend
 constructs) → correctly annotated image served.
 
+## Vehicle type + color classification — done
+
+Two related but distinct pieces of work, from a single "classify
+vehicles with colors and type" ask.
+
+**Type** was mostly latent, not new modeling work: `Detector` and
+`Tracker` were both independently collapsing car/motorcycle/bus/truck
+(COCO ids 2/3/5/7) into one generic `"vehicle"` string. The model was
+already distinguishing them; the code was throwing that away. Fixed
+by extracting the mapping into a single shared module,
+`vision/coco_classes.py` (`classify_coco_id()`, `is_vehicle()`),
+removing the duplicated logic from both `Detector` and `Tracker`
+rather than fixing it twice.
+
+**This had one genuine landmine**: `anpr/engine.py`'s trigger check
+was `if obj.cls != "vehicle": continue` — a hardcoded string compare
+that would have silently stopped ANPR from ever triggering the moment
+`cls` became `"car"`/`"truck"`/etc. Caught by grepping for every
+`"vehicle"` string comparison across the codebase before considering
+the type change done, not discovered later by ANPR mysteriously
+producing zero results. Fixed to use the new `is_vehicle()` helper.
+
+**Color** is genuinely new: `anpr/color_classifier.py`, classical
+HSV-bucket thresholding (white/black/gray + 6 hues), same reasoning as
+the plate localizer — no pretrained color-classifier model was
+reachable from this build environment, and for a bounded set of common
+vehicle colors this is a legitimate scope, not a placeholder. Runs on
+every triggered vehicle (cheap enough not to need its own gate, unlike
+OCR), riding along on the ANPR checkpoint's existing trigger.
+
+**Verification, including a real bug caught by testing on real
+footage instead of stopping at synthetic swatches:**
+1. All 9 solid synthetic color swatches (white, black, gray, red,
+   orange, yellow, green, blue, purple) classified correctly at 100%
+   confidence — confirms the hue-bucket boundaries themselves are
+   sound.
+2. First real-footage test: the known-white van in the sample clip
+   was misclassified as **orange**. Investigating (viewing the actual
+   crop, not just the numbers) showed the bug was in the *test* — a
+   hand-guessed bounding box that captured mostly the reddish-brick
+   building behind the van, not the van itself. Not a classifier bug.
+3. Re-ran using the *actual* tracker-produced bounding box instead of
+   a guessed one: van correctly classified white (74% confidence), a
+   second vehicle correctly blue (70% — visually confirmed as a fair,
+   not slam-dunk, call on a genuinely pale bluish-teal car, which is
+   exactly what a moderate confidence score should look like).
+4. Full backend round-trip: real pipeline → `POST /api/anpr` → SQLite
+   → `GET /api/anpr` — `vehicle_type`/`vehicle_color`/
+   `vehicle_color_confidence` confirmed present and correct all the
+   way through, not just at the Python-object level.
+5. Frontend `ANPRTable.jsx` updated with Type and Color columns (a
+   color swatch dot, not just text) and rebuilt clean.
+
+Updated for consistency in the same pass: `FRONTEND_BLUEPRINT.md`'s
+API reference and TypeScript interfaces, and
+`CommandCenterReference.jsx`'s mock data (both still said `"vehicle"`
+and were now factually wrong about the real API shape).
+
 ## Remaining optional work
 
 Everything in the original guide's core MVP (Phases 0–5) plus the
