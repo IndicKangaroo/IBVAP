@@ -39,9 +39,9 @@ def ensure_frontend_built(rebuild: bool) -> None:
     dist_dir = frontend_dir / "dist"
     node_modules = frontend_dir / "node_modules"
 
-    if dist_dir.exists() and not rebuild:
-        print(f"Using existing frontend build at {dist_dir} (pass --rebuild-frontend to force a rebuild)")
-        return
+    # if dist_dir.exists() and not rebuild:
+    #     print(f"Using existing frontend build at {dist_dir} (pass --rebuild-frontend to force a rebuild)")
+    #     return
 
     if not shutil.which("npm"):
         print(
