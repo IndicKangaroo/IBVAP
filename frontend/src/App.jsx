@@ -45,7 +45,7 @@ export default function App() {
 
   const [selectedCameraId, setSelectedCameraId] = useState(null);
   const [selectedIncidentId, setSelectedIncidentId] = useState(null);
-  const [tab, setTab] = useState("incidents");
+  const [tab, setTab] = useState("anpr");
   const [showAddCamera, setShowAddCamera] = useState(false);
 
   // Default the selected camera to the first one once cameras load —
@@ -106,7 +106,7 @@ export default function App() {
       <div className="border-t shrink-0" style={{ borderColor: palette.border, height: 220 }}>
         <div className="flex border-b" style={{ borderColor: palette.border }}>
           {[
-            { key: "incidents", label: "Incident timeline" },
+            // { key: "incidents", label: "Incident timeline" },
             { key: "anpr", label: "ANPR log" },
           ].map((t) => (
             <button
